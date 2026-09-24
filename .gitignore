@@ -1,0 +1,17 @@
+# Gradle and Build Files
+.gradle/
+build/
+*/build/
+*.apk
+*.aab
+local.properties
+
+# IDE & Editor
+.idea/
+*.iml
+.vscode/
+
+# OS Files
+Thumbs.db
+Desktop.ini
+.DS_Store

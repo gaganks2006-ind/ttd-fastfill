@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTD FastFill Assistant</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <!-- TTD Official Style Header -->
+  <div class="ttd-header">
+    <div class="ttd-header-brand">
+      <div class="ttd-emblem">🕉️</div>
+      <div class="ttd-header-titles">
+        <span class="main-title">TTD FastFill Assistant</span>
+        <span class="eng-title">Tirumala Tirupati Devasthanams</span>
+      </div>
+    </div>
+    <div class="ttd-slogan">Om Namo Venkatesaya</div>
+  </div>
+
+  <!-- Master Bot Switch Bar -->
+  <div class="master-switch-bar">
+    <div class="master-status-info">
+      <span class="status-indicator" id="master-indicator"></span>
+      <div>
+        <b id="master-status-text">Bot System Active</b>
+        <small id="master-subtext">Ready to autofill on TTD portal</small>
+      </div>
+    </div>
+    <label class="switch">
+      <input type="checkbox" id="master-bot-toggle" checked>
+      <span class="slider round"></span>
+    </label>
+  </div>
+
+  <!-- Quota & Selection Summary Pill -->
+  <div class="selection-summary-bar">
+    <div class="quota-pill">
+      <span>Selected for Booking:</span>
+      <b id="active-devotee-count">0</b> <small>/ 6 max</small>
+    </div>
+    <button class="btn-text-action" id="btn-select-all">Select All</button>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="ttd-tabs">
+    <button class="tab-btn active" data-tab="devotees">Devotees</button>
+    <button class="tab-btn" data-tab="general">Address & Contact</button>
+    <button class="tab-btn" data-tab="phone">📱 Phone Setup</button>
+    <button class="tab-btn" data-tab="settings">Settings</button>
+  </div>
+
+  <!-- TAB 1: DEVOTEES -->
+  <div class="tab-content active" id="tab-devotees">
+    <div class="profile-row">
+      <label>Saved Pool:</label>
+      <select id="profile-select">
+        <option value="default">Family & Friends</option>
+      </select>
+      <button class="btn-icon" id="btn-add-profile" title="Create New Group">+</button>
+    </div>
+
+    <div class="devotee-list" id="devotee-container">
+      <!-- Injected dynamically -->
+    </div>
+
+    <div class="action-buttons">
+      <button class="btn-secondary" id="btn-add-devotee">+ Add Devotee to Pool</button>
+      <button class="btn-primary" id="btn-save-devotees">💾 Save Devotee Changes</button>
+    </div>
+  </div>
+
+  <!-- TAB 2: GENERAL DETAILS -->
+  <div class="tab-content" id="tab-general">
+    <div class="card-inner">
+      <div class="form-group">
+        <label>Email ID *</label>
+        <input type="email" id="gen-email" placeholder="example@gmail.com" class="ttd-input">
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>City *</label>
+          <input type="text" id="gen-city" placeholder="Bengaluru" class="ttd-input">
+        </div>
+        <div class="form-group">
+          <label>State *</label>
+          <input type="text" id="gen-state" placeholder="Karnataka" class="ttd-input">
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div class="form-group">
+          <label>Country *</label>
+          <input type="text" id="gen-country" value="India" class="ttd-input">
+        </div>
+        <div class="form-group">
+          <label>Pincode *</label>
+          <input type="text" maxlength="6" id="gen-pincode" placeholder="560001" class="ttd-input">
+        </div>
+      </div>
+      <button class="btn-primary" id="btn-save-general">💾 Save Contact Details</button>
+    </div>
+  </div>
+
+  <!-- TAB 3: PHONE / MOBILE BOOKMARKLET -->
+  <div class="tab-content" id="tab-phone">
+    <div class="card-inner">
+      <h3 class="card-subtitle">📱 1-Click Mobile Bookmarklet</h3>
+      <p class="card-desc">
+        Use standard <b>Chrome</b> on Android or <b>Safari</b> on iPhone without downloading apps! 
+        Only the <b>"Going this time"</b> devotees will be included.
+      </p>
+
+      <button class="btn-primary" id="btn-copy-bookmarklet">📋 Copy 1-Click Mobile Bookmarklet</button>
+      <div id="bookmarklet-copied-msg" class="success-banner" style="display:none;">
+        ✅ Copied to clipboard! Save as a bookmark on your phone.
+      </div>
+
+      <div class="phone-steps">
+        <b>Phone Setup in 3 Steps:</b>
+        <ol>
+          <li>Open Chrome or Safari on your phone. Bookmark any page.</li>
+          <li>Edit the bookmark: name it <code>⚡ TTD FastFill</code>, and paste the copied snippet into the URL.</li>
+          <li>When on TTD's devotee page, tap your bookmark to fill in 0.2s!</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: SETTINGS -->
+  <div class="tab-content" id="tab-settings">
+    <div class="card-inner">
+      <div class="checkbox-line">
+        <input type="checkbox" id="set-auto-check" checked>
+        <label for="set-auto-check">Auto-check Rules & Regulations Checkbox</label>
+      </div>
+      <div class="checkbox-line">
+        <input type="checkbox" id="set-auto-continue">
+        <label for="set-auto-continue">Auto-click "Continue" after filling</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="ttd-footer">
+    <span id="footer-status">100% Secure & Local • Data stays on your device</span>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,155 @@
+/* TTD FastFill Floating HUD - Official TTD Theme */
+#ttd-fastfill-hud {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 320px;
+  background: #ffffff;
+  color: #233443;
+  border: 1.5px solid #501d5d;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(80, 29, 93, 0.2), 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 13px;
+  z-index: 2147483647;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+  user-select: none;
+}
+
+#ttd-fastfill-hud.minimized .ttd-hud-body {
+  display: none;
+}
+
+#ttd-fastfill-hud.minimized {
+  width: auto;
+  border-radius: 24px;
+}
+
+.ttd-hud-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #501d5d;
+  color: #ffffff;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  cursor: grab;
+}
+
+#ttd-fastfill-hud.minimized .ttd-hud-header {
+  border-radius: 20px;
+  padding: 8px 14px;
+}
+
+.ttd-hud-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #ffffff;
+}
+
+.ttd-hud-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.ttd-hud-btn-icon {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: #ffffff;
+  border-radius: 4px;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.ttd-hud-btn-icon:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.ttd-hud-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #faf4f5;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.ttd-hud-profile-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #ebdfee;
+}
+
+.ttd-hud-badge {
+  background: #501d5d;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+
+.ttd-btn-primary {
+  width: 100%;
+  background: #501d5d;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-weight: 700;
+  font-size: 13.5px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(80, 29, 93, 0.3);
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.ttd-btn-primary:hover {
+  background: #6a257c;
+  transform: translateY(-1px);
+}
+
+.ttd-btn-primary:active {
+  transform: translateY(1px);
+}
+
+.ttd-hud-status {
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  background: #ffffff;
+  border: 1px dashed #d1c4d4;
+  color: #64748b;
+}
+
+.ttd-hud-status.success {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  color: #166534;
+  font-weight: 600;
+}
+
+.ttd-hud-status.error {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  color: #991b1b;
+}

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">TTD FastFill</string>
+    <string name="btn_fastfill">⚡ 1-Click FastFill</string>
+    <string name="btn_devotees">⚙️ Devotees</string>
+    <string name="status_ready">Ready • Open TTD Booking Page</string>
+    <string name="status_filling">⚡ Auto-filling devotee details...</string>
+    <string name="status_success">✅ Filled successfully!</string>
+</resources>

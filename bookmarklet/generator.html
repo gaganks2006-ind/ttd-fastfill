@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TTD Mobile Bookmarklet Generator</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #faf4f5;
+      color: #233443;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding-bottom: 60px;
+    }
+    .ttd-header {
+      background: #501d5d;
+      color: #fff;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #3c1247;
+    }
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-wrap h1 {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .brand-wrap p {
+      font-size: 12px;
+      color: #e9d5ff;
+    }
+    .container {
+      max-width: 680px;
+      margin: 24px auto;
+      padding: 0 16px;
+    }
+    .card {
+      background: #ffffff;
+      border: 1px solid #ede4ea;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 10px rgba(80, 29, 93, 0.04);
+    }
+    .card-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #f1e9f0;
+    }
+    .card-title {
+      font-size: 16px;
+      color: #501d5d;
+      font-weight: 700;
+    }
+    .quota-badge {
+      background: #501d5d;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+    .devotee-box {
+      background: #ffffff;
+      border: 1.5px solid #e2d9e1;
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+    .devotee-box.active-traveler {
+      border-color: #501d5d;
+      background: #fff;
+    }
+    .devotee-box.inactive-traveler {
+      opacity: 0.6;
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+    .d-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+    /* Switch */
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 24px;
+    }
+    .switch input { opacity: 0; width: 0; height: 0; }
+    .slider {
+      position: absolute; cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #cbd5e1;
+      transition: 0.25s;
+    }
+    .slider:before {
+      position: absolute; content: "";
+      height: 18px; width: 18px;
+      left: 3px; bottom: 3px;
+      background-color: white;
+      transition: 0.25s;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    input:checked + .slider { background-color: #501d5d; }
+    input:checked + .slider:before { transform: translateX(20px); }
+    .slider.round { border-radius: 24px; }
+    .slider.round:before { border-radius: 50%; }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: #64748b;
+      margin-bottom: 4px;
+    }
+    input, select {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #1e293b;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 13px;
+      outline: none;
+    }
+    input:focus, select:focus {
+      border-color: #501d5d;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .btn {
+      width: 100%;
+      padding: 12px 18px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: #501d5d;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(80, 29, 93, 0.25);
+    }
+    .btn-primary:hover {
+      background: #6a257c;
+    }
+    .btn-secondary {
+      background: #ffffff;
+      color: #501d5d;
+      border: 1.5px solid #501d5d;
+      margin-top: 8px;
+    }
+    .btn-secondary:hover {
+      background: #faf4f5;
+    }
+    .instructions-card {
+      background: #fdf4ff;
+      border-left: 4px solid #501d5d;
+      padding: 14px 16px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: #334155;
+      margin-top: 16px;
+    }
+    .instructions-card ol {
+      margin-left: 20px;
+      margin-top: 6px;
+    }
+    code {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #501d5d;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      font-family: monospace;
+      font-size: 11px;
+      padding: 8px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ttd-header">
+    <div class="brand-wrap">
+      <span style="font-size: 26px;">🕉️</span>
+      <div>
+        <h1>TTD Mobile Bookmarklet Generator</h1>
+        <p>Pre-configure devotees & toggle who is going this time</p>
+      </div>
+    </div>
+    <div style="font-size: 12px; font-weight: 700; color: #ffd700;">
+      Om Namo Venkatesaya
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="card-header-bar">
+        <span class="card-title">1. Devotees Pool</span>
+        <span class="quota-badge" id="quota-display">Selected: 1 / 6 max</span>
+      </div>
+
+      <div id="devotee-list-wrap"></div>
+      <button class="btn btn-secondary" id="btn-add-d">+ Add Devotee to Pool</button>
+    </div>
+
+    <div class="card">
+      <div class="card-header-bar">
+        <span class="card-title">2. General Details</span>
+      </div>
+      <div class="form-group">
+        <label>Email ID *</label>
+        <input type="email" id="email" value="gagan@example.com">
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>City *</label>
+          <input type="text" id="city" value="Bengaluru">
+        </div>
+        <div class="form-group">
+          <label>State *</label>
+          <input type="text" id="state" value="Karnataka">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label>Country *</label>
+          <input type="text" id="country" value="India">
+        </div>
+        <div class="form-group">
+          <label>Pincode *</label>
+          <input type="text" maxlength="6" id="pincode" value="560001">
+        </div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" id="btn-generate">⚡ Generate & Copy Mobile Bookmarklet</button>
+
+    <div id="output-box" style="display: none;">
+      <div class="instructions-card">
+        <b>🎉 Bookmarklet Ready for Active Devotees!</b>
+        <ol>
+          <li>Open <b>Chrome</b> or <b>Safari</b> on your phone. Bookmark any webpage.</li>
+          <li>Edit that bookmark, name it <code>⚡ TTD FastFill</code>, and replace the URL with the generated code.</li>
+          <li>On booking day, open TTD on your phone. When on the devotee page, tap your bookmark and it fills in <b>0.2s</b>!</li>
+        </ol>
+      </div>
+      <textarea id="output-code" readonly></textarea>
+    </div>
+  </div>
+
+  <script>
+    let devotees = JSON.parse(localStorage.getItem('ttd_mobile_devotees')) || [
+      { name: 'GAGAN K S', age: '25', gender: 'Male', idType: 'Aadhaar Card', idNumber: '987654321012', active: true },
+      { name: 'RAMESH KUMAR', age: '48', gender: 'Male', idType: 'Aadhaar Card', idNumber: '234567890123', active: false }
+    ];
+
+    function saveLocal() {
+      localStorage.setItem('ttd_mobile_devotees', JSON.stringify(devotees));
+    }
+
+    function renderDevotees() {
+      saveLocal();
+      const wrap = document.getElementById('devotee-list-wrap');
+      wrap.innerHTML = '';
+
+      const activeCount = devotees.filter(d => d.active !== false).length;
+      document.getElementById('quota-display').textContent = `Selected: ${activeCount} / 6 max`;
+
+      devotees.forEach((d, idx) => {
+        const isGoing = d.active !== false;
+        const box = document.createElement('div');
+        box.className = `devotee-box ${isGoing ? 'active-traveler' : 'inactive-traveler'}`;
+        box.innerHTML = `
+          <div class="d-top-row">
+            <b style="color: ${isGoing ? '#501d5d' : '#64748b'}; font-size: 13px;">Devotee #${idx + 1}: ${d.name || 'Unnamed'}</b>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:11.5px; font-weight:700; color:${isGoing ? '#501d5d' : '#64748b'};">
+                ${isGoing ? 'Going' : 'Not Going'}
+              </span>
+              <label class="switch" style="transform: scale(0.85);">
+                <input type="checkbox" onchange="toggleDevotee(${idx}, this.checked)" ${isGoing ? 'checked' : ''}>
+                <span class="slider round"></span>
+              </label>
+              ${devotees.length > 1 ? `<span style="color:#dc2626; cursor:pointer; font-weight:bold; margin-left:6px;" onclick="removeDevotee(${idx})">×</span>` : ''}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Name (as per ID) *</label>
+            <input type="text" value="${d.name}" oninput="devotees[${idx}].name=this.value.toUpperCase()">
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Age *</label>
+              <input type="number" value="${d.age}" oninput="devotees[${idx}].age=this.value">
+            </div>
+            <div class="form-group">
+              <label>Gender *</label>
+              <select onchange="devotees[${idx}].gender=this.value">
+                <option value="Male" ${d.gender === 'Male' ? 'selected' : ''}>Male</option>
+                <option value="Female" ${d.gender === 'Female' ? 'selected' : ''}>Female</option>
+                <option value="Transgender" ${d.gender === 'Transgender' ? 'selected' : ''}>Transgender</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="form-group">
+              <label>Photo ID Proof *</label>
+              <select onchange="devotees[${idx}].idType=this.value">
+                <option value="Aadhaar Card" ${d.idType === 'Aadhaar Card' ? 'selected' : ''}>Aadhaar Card</option>
+                <option value="Voter ID" ${d.idType === 'Voter ID' ? 'selected' : ''}>Voter ID</option>
+                <option value="Passport" ${d.idType === 'Passport' ? 'selected' : ''}>Passport</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Photo ID Number *</label>
+              <input type="text" value="${d.idNumber}" oninput="devotees[${idx}].idNumber=this.value">
+            </div>
+          </div>
+        `;
+        wrap.appendChild(box);
+      });
+    }
+
+    function toggleDevotee(idx, val) {
+      const activeCount = devotees.filter(d => d.active !== false).length;
+      if (val && activeCount >= 6) {
+        alert('⚠️ TTD allows a maximum of 6 tickets per booking. You cannot select more than 6 devotees at once.');
+        renderDevotees();
+        return;
+      }
+      devotees[idx].active = val;
+      renderDevotees();
+    }
+
+    function removeDevotee(idx) {
+      devotees.splice(idx, 1);
+      renderDevotees();
+    }
+
+    document.getElementById('btn-add-d').addEventListener('click', () => {
+      const activeCount = devotees.filter(d => d.active !== false).length;
+      devotees.push({
+        name: '',
+        age: '',
+        gender: 'Male',
+        idType: 'Aadhaar Card',
+        idNumber: '',
+        active: activeCount < 6
+      });
+      renderDevotees();
+    });
+
+    document.getElementById('btn-generate').addEventListener('click', async () => {
+      const activeOnly = devotees.filter(d => d.active !== false);
+      if (activeOnly.length === 0) {
+        alert('⚠️ Please toggle at least 1 devotee to "Going" before generating.');
+        return;
+      }
+
+      const general = {
+        email: document.getElementById('email').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        state: document.getElementById('state').value.trim(),
+        country: document.getElementById('country').value.trim(),
+        pincode: document.getElementById('pincode').value.trim()
+      };
+
+      const payload = { pilgrims: activeOnly, general };
+
+      const code = `javascript:(async function(){
+const data=${JSON.stringify(payload)};
+function setVal(el,v){
+  if(!el)return;
+  el.focus();
+  const s=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value')?.set;
+  if(s){s.call(el,v);}else{el.value=v;}
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+  el.dispatchEvent(new Event('change',{bubbles:true}));
+  el.dispatchEvent(new Event('blur',{bubbles:true}));
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+console.log('⚡ TTD FastFill starting...');
+const names=document.querySelectorAll('input[name="fname"]');
+const ages=document.querySelectorAll('input[name="age"]');
+const genders=document.querySelectorAll('input[name="gender"]');
+const idTypes=document.querySelectorAll('input[name="photoIdType"]');
+for(let i=0;i<data.pilgrims.length;i++){
+  const p=data.pilgrims[i];
+  if(names[i])setVal(names[i],p.name);
+  if(ages[i])setVal(ages[i],p.age);
+  if(genders[i]){
+    genders[i].click();
+    await sleep(100);
+    const m=Array.from(document.querySelectorAll('li')).find(li=>(li.innerText||'').trim().toLowerCase()===p.gender.toLowerCase());
+    if(m)m.click();
+    await sleep(100);
+  }
+  if(idTypes[i]){
+    idTypes[i].click();
+    await sleep(100);
+    const id=Array.from(document.querySelectorAll('li')).find(li=>(li.innerText||'').toLowerCase().includes(p.idType.toLowerCase().slice(0,4)));
+    if(id)id.click();
+    await sleep(120);
+  }
+  const idNums=document.querySelectorAll('input[name="idProofNumber"]');
+  if(idNums[i])setVal(idNums[i],p.idNumber);
+}
+if(data.general){
+  setVal(document.querySelector('input[name="emailId"]'),data.general.email);
+  setVal(document.querySelector('input[name="city"]'),data.general.city);
+  setVal(document.querySelector('input[name="state"]'),data.general.state);
+  setVal(document.querySelector('input[name="country"]'),data.general.country||'India');
+  setVal(document.querySelector('input[name="pincode"]'),data.general.pincode);
+}
+document.querySelectorAll('input[type="checkbox"]').forEach(c=>{if(!c.checked)c.click();});
+alert('✅ [TTD FastFill] Filled '+data.pilgrims.length+' Devotee(s) & Address!');
+})();`;
+
+      document.getElementById('output-code').value = code;
+      document.getElementById('output-box').style.display = 'block';
+
+      try {
+        await navigator.clipboard.writeText(code);
+        alert(`✅ Copied to clipboard! Generated bookmarklet for ${activeOnly.length} devotee(s).`);
+      } catch (e) {
+        alert(`Generated for ${activeOnly.length} devotee(s)! Please copy from the box below.`);
+      }
+    });
+
+    renderDevotees();
+  </script>
+</body>
+</html>

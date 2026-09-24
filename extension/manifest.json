@@ -1,0 +1,45 @@
+{
+  "manifest_version": 3,
+  "name": "TTD FastFill - Special Darshan Assistant",
+  "version": "1.0.0",
+  "description": "Lightning-fast autofill for TTD Special Entry Darshan (₹300) booking on Desktop and Mobile.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "TTD FastFill Settings"
+  },
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://ttdevasthanams.ap.gov.in/*",
+    "https://*.ttdevasthanams.ap.gov.in/*",
+    "https://tirupatibalaji.ap.gov.in/*",
+    "https://*.tirupatibalaji.ap.gov.in/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://ttdevasthanams.ap.gov.in/*",
+        "https://*.ttdevasthanams.ap.gov.in/*",
+        "https://tirupatibalaji.ap.gov.in/*",
+        "https://*.tirupatibalaji.ap.gov.in/*"
+      ],
+      "js": [
+        "core-filler.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_end"
+    }
+  ]
+}
