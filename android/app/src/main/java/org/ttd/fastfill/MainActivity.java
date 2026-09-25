@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.InputFilter;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.webkit.CookieManager;
@@ -15,6 +17,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,6 +31,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.button.MaterialButton;
 
@@ -187,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (activeOnly.isEmpty()) {
-            Toast.makeText(this, "⚠️ No devotees are toggled 'Going'. Please tap Devotees and select who is traveling.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "⚠️ No devotees are selected as 'Going'. Tap Devotees to pick who travels.", Toast.LENGTH_LONG).show();
             tvStatus.setText("⚠️ Please select at least 1 devotee");
             return;
         }
@@ -249,9 +253,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showDevoteesDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_devotees, null);
+
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.Theme_TTDFastFill_Dialog)
+                .setView(dialogView)
+                .setCancelable(true)
+                .create();
 
         TextView tvActiveCount = dialogView.findViewById(R.id.tv_active_count);
         Button btnToggleSelection = dialogView.findViewById(R.id.btn_toggle_selection);
@@ -262,6 +270,9 @@ public class MainActivity extends AppCompatActivity {
         EditText etCity = dialogView.findViewById(R.id.et_city);
         EditText etState = dialogView.findViewById(R.id.et_state);
         EditText etPincode = dialogView.findViewById(R.id.et_pincode);
+
+        Button btnCancel = dialogView.findViewById(R.id.btn_dialog_cancel);
+        Button btnSave = dialogView.findViewById(R.id.btn_dialog_save);
 
         etEmail.setText(prefs.getString("email", "devotee@gmail.com"));
         etCity.setText(prefs.getString("city", "Bengaluru"));
@@ -283,30 +294,43 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 tvActiveCount.setText(currentActive + " / " + MAX_ACTIVE_DEVOTEES + " Selected");
-                btnToggleSelection.setText(currentActive > 0 ? "Deselect All" : "Select First 6");
+                btnToggleSelection.setText(currentActive > 0 ? "Deselect All" : "⚡ Select First 6");
 
                 for (int i = 0; i < devoteeList.size(); i++) {
                     final int idx = i;
                     Devotee d = devoteeList.get(i);
                     View cardView = inflater.inflate(R.layout.item_devotee_card, container, false);
 
+                    TextView tvBadge = cardView.findViewById(R.id.tv_devotee_badge);
                     TextView tvTitle = cardView.findViewById(R.id.tv_devotee_title);
+                    TextView tvGoingStatus = cardView.findViewById(R.id.tv_going_status);
                     SwitchCompat switchGoing = cardView.findViewById(R.id.switch_going);
                     ImageButton btnDelete = cardView.findViewById(R.id.btn_delete);
                     EditText etName = cardView.findViewById(R.id.et_name);
                     EditText etAge = cardView.findViewById(R.id.et_age);
                     Spinner spGender = cardView.findViewById(R.id.sp_gender);
                     Spinner spIdType = cardView.findViewById(R.id.sp_id_type);
+                    TextView tvIdNumberLabel = cardView.findViewById(R.id.tv_id_number_label);
                     EditText etIdNumber = cardView.findViewById(R.id.et_id_number);
+                    TextView tvIdHelper = cardView.findViewById(R.id.tv_id_helper);
 
-                    tvTitle.setText("Devotee #" + (idx + 1) + (d.name.isEmpty() ? "" : " (" + d.name + ")"));
+                    tvBadge.setText("#" + (idx + 1));
+                    tvTitle.setText(d.name.isEmpty() ? "Devotee #" + (idx + 1) : d.name);
                     switchGoing.setChecked(d.active);
-                    switchGoing.setText(d.active ? "Going " : "Not Going ");
+
+                    if (d.active) {
+                        tvGoingStatus.setText("Going");
+                        tvGoingStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.green_travel));
+                    } else {
+                        tvGoingStatus.setText("Not Going");
+                        tvGoingStatus.setTextColor(ContextCompat.getColor(MainActivity.this, R.color.text_secondary));
+                    }
 
                     etName.setText(d.name);
                     etAge.setText(d.age);
                     etIdNumber.setText(d.idNumber);
 
+                    // Gender Adapter
                     ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, genders);
                     spGender.setAdapter(genderAdapter);
                     int gPos = 0;
@@ -315,6 +339,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     spGender.setSelection(gPos);
 
+                    // ID Type Adapter
                     ArrayAdapter<String> idAdapter = new ArrayAdapter<>(MainActivity.this, android.R.layout.simple_spinner_dropdown_item, idTypes);
                     spIdType.setAdapter(idAdapter);
                     int idPos = 0;
@@ -322,6 +347,21 @@ public class MainActivity extends AppCompatActivity {
                         if (idTypes[id].equalsIgnoreCase(d.idType)) { idPos = id; break; }
                     }
                     spIdType.setSelection(idPos);
+
+                    // Configure ID Proof field based on selected ID Type (Enforces 12-digit Aadhaar limit!)
+                    applyIdTypeRules(d.idType, tvIdNumberLabel, etIdNumber, tvIdHelper);
+
+                    spIdType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                            String selectedType = idTypes[position];
+                            devoteeList.get(idx).idType = selectedType;
+                            applyIdTypeRules(selectedType, tvIdNumberLabel, etIdNumber, tvIdHelper);
+                        }
+
+                        @Override
+                        public void onNothingSelected(AdapterView<?> parent) {}
+                    });
 
                     // Strict max 6 selection restriction
                     switchGoing.setOnCheckedChangeListener((buttonView, isChecked) -> {
@@ -361,19 +401,18 @@ public class MainActivity extends AppCompatActivity {
 
         refreshUI.run();
 
-        // Add devotee button (Unlimited devotees allowed!)
+        // Add devotee button (Unlimited pool allowed!)
         btnAddDevotee.setOnClickListener(v -> {
             saveCurrentCardInputs(container, devoteeList);
             int currentActive = 0;
             for (Devotee d : devoteeList) {
                 if (d.active) currentActive++;
             }
-            // If less than 6 active, default new devotee to active; otherwise inactive
             devoteeList.add(new Devotee("", "", "Male", "Aadhaar Card", "", currentActive < MAX_ACTIVE_DEVOTEES));
             refreshUI.run();
         });
 
-        // Quick selection button (Restricts to top 6 at once)
+        // Quick selection button
         btnToggleSelection.setOnClickListener(v -> {
             saveCurrentCardInputs(container, devoteeList);
             int currentActive = 0;
@@ -397,24 +436,123 @@ public class MainActivity extends AppCompatActivity {
             refreshUI.run();
         });
 
-        builder.setView(dialogView)
-                .setTitle("Manage Devotees Pool")
-                .setPositiveButton("Save & Ready", (dialog, which) -> {
-                    saveCurrentCardInputs(container, devoteeList);
-                    saveDevoteesToPrefs(devoteeList);
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
 
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString("email", etEmail.getText().toString().trim());
-                    editor.putString("city", etCity.getText().toString().trim());
-                    editor.putString("state", etState.getText().toString().trim());
-                    editor.putString("pincode", etPincode.getText().toString().trim());
-                    editor.apply();
+        // Comprehensive validation loop resolving all loopholes
+        btnSave.setOnClickListener(v -> {
+            saveCurrentCardInputs(container, devoteeList);
 
-                    updateReadyStatus();
-                    Toast.makeText(MainActivity.this, "Devotees pool saved! Ready for 1-Click FastFill.", Toast.LENGTH_SHORT).show();
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
+            // 1. Validate Devotees
+            int activeCount = 0;
+            for (int i = 0; i < devoteeList.size(); i++) {
+                Devotee d = devoteeList.get(i);
+                int devNum = i + 1;
+
+                if (d.active) activeCount++;
+
+                // Validate Name
+                if (d.name.trim().isEmpty()) {
+                    Toast.makeText(MainActivity.this, "⚠️ Devotee #" + devNum + ": Name cannot be blank.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                // Validate Age
+                if (d.age.trim().isEmpty()) {
+                    Toast.makeText(MainActivity.this, "⚠️ Devotee #" + devNum + " (" + d.name + "): Age cannot be blank.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                try {
+                    int ageVal = Integer.parseInt(d.age.trim());
+                    if (ageVal < 1 || ageVal > 120) {
+                        Toast.makeText(MainActivity.this, "⚠️ Devotee #" + devNum + ": Please enter a realistic age (1 - 120).", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                } catch (NumberFormatException e) {
+                    Toast.makeText(MainActivity.this, "⚠️ Devotee #" + devNum + ": Age must be a number.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                // Validate ID Number & Aadhaar 12-digit rule
+                String idNum = d.idNumber.trim();
+                if (idNum.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "⚠️ Devotee #" + devNum + " (" + d.name + "): ID Number cannot be blank.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                if (d.idType.equalsIgnoreCase("Aadhaar Card")) {
+                    String cleanDigits = idNum.replaceAll("\\s+", "");
+                    if (cleanDigits.length() != 12 || !cleanDigits.matches("\\d{12}")) {
+                        Toast.makeText(MainActivity.this, "⚠️ Devotee #" + devNum + " (" + d.name + "): Aadhaar number MUST be exactly 12 digits (currently " + cleanDigits.length() + " digits).", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                }
+            }
+
+            // Check active travel count
+            if (activeCount == 0) {
+                Toast.makeText(MainActivity.this, "⚠️ Please toggle at least 1 devotee to 'Going' before saving.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (activeCount > MAX_ACTIVE_DEVOTEES) {
+                Toast.makeText(MainActivity.this, "⚠️ Maximum " + MAX_ACTIVE_DEVOTEES + " devotees can travel at once.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            // 2. Validate Address
+            String email = etEmail.getText().toString().trim();
+            String city = etCity.getText().toString().trim();
+            String state = etState.getText().toString().trim();
+            String pincode = etPincode.getText().toString().trim();
+
+            if (email.isEmpty() || !email.contains("@") || !email.contains(".")) {
+                Toast.makeText(MainActivity.this, "⚠️ Please enter a valid Email Address.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (city.isEmpty()) {
+                Toast.makeText(MainActivity.this, "⚠️ City cannot be blank.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (state.isEmpty()) {
+                Toast.makeText(MainActivity.this, "⚠️ State cannot be blank.", Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (!pincode.matches("\\d{6}")) {
+                Toast.makeText(MainActivity.this, "⚠️ Pincode must be exactly 6 digits.", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            // All checks passed! Save to storage
+            saveDevoteesToPrefs(devoteeList);
+
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("email", email);
+            editor.putString("city", city);
+            editor.putString("state", state);
+            editor.putString("pincode", pincode);
+            editor.apply();
+
+            updateReadyStatus();
+            dialog.dismiss();
+            Toast.makeText(MainActivity.this, "✅ Devotees pool saved & verified! Ready for 1-Click FastFill.", Toast.LENGTH_SHORT).show();
+        });
+
+        dialog.show();
+    }
+
+    private void applyIdTypeRules(String idType, TextView tvLabel, EditText etInput, TextView tvHelper) {
+        if (idType.equalsIgnoreCase("Aadhaar Card")) {
+            tvLabel.setText("AADHAAR NUMBER (EXACTLY 12 DIGITS) *");
+            etInput.setInputType(InputType.TYPE_CLASS_NUMBER);
+            etInput.setFilters(new InputFilter[]{new InputFilter.LengthFilter(12)});
+            etInput.setHint("12-digit Aadhaar Number (Numbers only)");
+            tvHelper.setText("Restricted to exactly 12 digits (Numbers only)");
+        } else {
+            tvLabel.setText(idType.toUpperCase() + " NUMBER *");
+            etInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS);
+            etInput.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
+            etInput.setHint("Enter " + idType + " Number");
+            tvHelper.setText("Alphanumeric supported (Max 20 chars)");
+        }
     }
 
     private void saveCurrentCardInputs(LinearLayout container, List<Devotee> list) {
@@ -444,12 +582,18 @@ public class MainActivity extends AppCompatActivity {
                 JSONArray arr = new JSONArray(json);
                 for (int i = 0; i < arr.length(); i++) {
                     JSONObject obj = arr.getJSONObject(i);
+                    String idNum = obj.optString("idNumber", "");
+                    String idType = obj.optString("idType", "Aadhaar Card");
+                    // Clean Aadhaar if stored with excess digits
+                    if (idType.equalsIgnoreCase("Aadhaar Card") && idNum.length() > 12) {
+                        idNum = idNum.substring(0, 12);
+                    }
                     list.add(new Devotee(
                             obj.optString("name", ""),
                             obj.optString("age", ""),
                             obj.optString("gender", "Male"),
-                            obj.optString("idType", "Aadhaar Card"),
-                            obj.optString("idNumber", ""),
+                            idType,
+                            idNum,
                             obj.optBoolean("active", true)
                     ));
                 }
@@ -473,7 +617,11 @@ public class MainActivity extends AppCompatActivity {
                 obj.put("age", d.age);
                 obj.put("gender", d.gender);
                 obj.put("idType", d.idType);
-                obj.put("idNumber", d.idNumber);
+                String idNum = d.idNumber;
+                if (d.idType.equalsIgnoreCase("Aadhaar Card") && idNum.length() > 12) {
+                    idNum = idNum.substring(0, 12);
+                }
+                obj.put("idNumber", idNum);
                 obj.put("active", d.active);
                 arr.put(obj);
             }

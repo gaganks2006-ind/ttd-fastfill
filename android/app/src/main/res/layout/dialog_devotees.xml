@@ -4,18 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/background_light"
-    android:padding="16dp">
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
+        <!-- Top Header & Counter Bar -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingBottom="4dp">
 
             <TextView
                 android:layout_width="0dp"
@@ -23,32 +26,31 @@
                 android:layout_weight="1"
                 android:text="Devotees Pool"
                 android:textColor="@color/purple_ttd"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/tv_active_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/purple_ttd"
-                android:paddingHorizontal="10dp"
-                android:paddingVertical="4dp"
+                android:background="@drawable/bg_badge_devotee"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="5dp"
                 android:text="0 / 6 Selected"
                 android:textColor="@color/gold"
-                android:textSize="12sp"
+                android:textSize="12.5sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="10dp"
-            android:text="Save unlimited devotees. Toggle 'Going' for travelers (Strict TTD limit: max 6 selected at once)."
-            android:textColor="#666666"
+            android:layout_marginBottom="8dp"
+            android:text="Add unlimited family &amp; friends. Pick who travels (Max 6 tickets allowed by TTD)."
+            android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
-        <!-- Quick selection action row -->
+        <!-- Quick Selection Action -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -56,17 +58,19 @@
             android:gravity="end"
             android:orientation="horizontal">
 
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_toggle_selection"
                 style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Select First 6"
+                android:layout_height="36dp"
+                android:padding="0dp"
+                android:text="⚡ Select First 6"
                 android:textColor="@color/purple_ttd"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Dynamic Container for Unlimited Devotee Cards -->
+        <!-- Dynamic Container for Devotee Cards -->
         <LinearLayout
             android:id="@+id/ll_devotees_container"
             android:layout_width="match_parent"
@@ -79,74 +83,197 @@
             style="@style/Widget.MaterialComponents.Button.OutlinedButton"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:layout_marginBottom="16dp"
-            android:text="+ Add Another Devotee"
+            android:layout_marginBottom="18dp"
+            android:backgroundTint="@color/white"
+            android:text="+ ADD ANOTHER DEVOTEE"
             android:textColor="@color/purple_ttd"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            app:cornerRadius="10dp"
             app:strokeColor="@color/purple_ttd"
             app:strokeWidth="1.5dp" />
 
-        <!-- Address Card -->
+        <!-- Contact & Address Card -->
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="2dp">
+            android:layout_marginBottom="20dp"
+            app:cardBackgroundColor="@color/card_bg"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="3dp"
+            app:strokeColor="@color/card_border"
+            app:strokeWidth="1.5dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="12dp">
+                android:padding="14dp">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="8dp"
-                    android:text="Contact &amp; Address Details"
+                    android:paddingBottom="4dp"
+                    android:text="CONTACT &amp; ADDRESS DETAILS"
                     android:textColor="@color/purple_ttd"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"
+                    android:text="Auto-filled on TTD booking form"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11.5sp" />
+
+                <!-- Email -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="EMAIL ID *"
+                    android:textColor="@color/purple_ttd"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
 
                 <EditText
                     android:id="@+id/et_email"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Email ID"
+                    android:layout_height="44dp"
+                    android:layout_marginBottom="12dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:hint="Email Address (e.g. user@gmail.com)"
                     android:inputType="textEmailAddress"
-                    android:textSize="14sp" />
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="13.5sp" />
 
+                <!-- City + State Row -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
                     android:orientation="horizontal">
 
-                    <EditText
-                        android:id="@+id/et_city"
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
                         android:layout_weight="1"
-                        android:hint="City"
-                        android:textSize="14sp" />
+                        android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/et_state"
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:text="CITY *"
+                            android:textColor="@color/purple_ttd"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/et_city"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_input_rounded"
+                            android:hint="City (e.g. Bengaluru)"
+                            android:inputType="textCapWords"
+                            android:paddingHorizontal="12dp"
+                            android:textColor="@color/text_primary"
+                            android:textColorHint="@color/text_secondary"
+                            android:textSize="13.5sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="6dp"
                         android:layout_weight="1"
-                        android:hint="State"
-                        android:textSize="14sp" />
+                        android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/et_pincode"
-                        android:layout_width="95dp"
-                        android:layout_height="wrap_content"
-                        android:hint="Pincode"
-                        android:inputType="number"
-                        android:maxLength="6"
-                        android:textSize="14sp" />
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="4dp"
+                            android:text="STATE *"
+                            android:textColor="@color/purple_ttd"
+                            android:textSize="11sp"
+                            android:textStyle="bold" />
+
+                        <EditText
+                            android:id="@+id/et_state"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:background="@drawable/bg_input_rounded"
+                            android:hint="State (e.g. Karnataka)"
+                            android:inputType="textCapWords"
+                            android:paddingHorizontal="12dp"
+                            android:textColor="@color/text_primary"
+                            android:textColorHint="@color/text_secondary"
+                            android:textSize="13.5sp" />
+                    </LinearLayout>
                 </LinearLayout>
+
+                <!-- Pincode -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="4dp"
+                    android:text="PINCODE (6 DIGITS) *"
+                    android:textColor="@color/purple_ttd"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/et_pincode"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:background="@drawable/bg_input_rounded"
+                    android:hint="6-digit Pincode (e.g. 560001)"
+                    android:inputType="number"
+                    android:maxLength="6"
+                    android:paddingHorizontal="12dp"
+                    android:textColor="@color/text_primary"
+                    android:textColorHint="@color/text_secondary"
+                    android:textSize="13.5sp" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
+
+        <!-- Prominent High-Contrast Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingBottom="8dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_dialog_cancel"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="8dp"
+                android:layout_weight="1"
+                android:text="Cancel"
+                android:textColor="@color/text_secondary"
+                app:cornerRadius="10dp"
+                app:strokeColor="@color/text_secondary"
+                app:strokeWidth="1dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_dialog_save"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1.6"
+                android:backgroundTint="@color/purple_ttd"
+                android:text="💾 SAVE &amp; READY"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:cornerRadius="10dp" />
+        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

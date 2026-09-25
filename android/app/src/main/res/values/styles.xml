@@ -1,10 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.TTDFastFill" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+    <style name="Theme.TTDFastFill" parent="Theme.MaterialComponents.Light.NoActionBar">
         <item name="colorPrimary">@color/purple_ttd</item>
         <item name="colorPrimaryVariant">@color/purple_dark</item>
         <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">@color/gold</item>
         <item name="android:statusBarColor">@color/purple_ttd</item>
         <item name="android:navigationBarColor">@color/purple_ttd</item>
+        <item name="android:windowBackground">@color/background_light</item>
+        <item name="alertDialogTheme">@style/Theme.TTDFastFill.Dialog</item>
+    </style>
+
+    <style name="Theme.TTDFastFill.Dialog" parent="Theme.MaterialComponents.Light.Dialog.Alert">
+        <item name="colorPrimary">@color/purple_ttd</item>
+        <item name="colorSecondary">@color/gold</item>
+        <item name="colorSurface">@color/white</item>
+        <item name="android:colorBackground">@color/white</item>
+        <item name="android:textColorPrimary">@color/text_primary</item>
+        <item name="android:textColorSecondary">@color/text_secondary</item>
     </style>
 </resources>

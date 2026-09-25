@@ -864,7 +864,7 @@
               </div>
               <div class="input-field">
                 <label>Photo ID Number *</label>
-                <input type="text" class="in-idnum" data-idx="${idx}" value="${d.idNumber || ''}" placeholder="12-digit Aadhaar Number">
+                <input type="${d.idType === 'Aadhaar Card' ? 'number' : 'text'}" class="in-idnum" data-idx="${idx}" value="${d.idNumber || ''}" maxlength="${d.idType === 'Aadhaar Card' ? 12 : 20}" placeholder="${d.idType === 'Aadhaar Card' ? '12-digit Aadhaar Number' : 'ID Proof Number'}">
               </div>
             </div>
           `;
@@ -892,13 +892,25 @@
         });
         document.querySelectorAll('.in-idtype').forEach(el => {
           el.addEventListener('change', (e) => {
-            state.devotees[e.target.dataset.idx].idType = e.target.value;
+            const idx = e.target.dataset.idx;
+            const newType = e.target.value;
+            state.devotees[idx].idType = newType;
+            if (newType === 'Aadhaar Card' && state.devotees[idx].idNumber.length > 12) {
+              state.devotees[idx].idNumber = state.devotees[idx].idNumber.replace(/\D/g, '').slice(0, 12);
+            }
             saveState();
+            renderDevotees();
           });
         });
         document.querySelectorAll('.in-idnum').forEach(el => {
           el.addEventListener('input', (e) => {
-            state.devotees[e.target.dataset.idx].idNumber = e.target.value.trim();
+            const idx = e.target.dataset.idx;
+            let val = e.target.value;
+            if (state.devotees[idx].idType === 'Aadhaar Card') {
+              val = val.replace(/\D/g, '').slice(0, 12);
+              e.target.value = val;
+            }
+            state.devotees[idx].idNumber = val.trim();
             saveState();
           });
         });

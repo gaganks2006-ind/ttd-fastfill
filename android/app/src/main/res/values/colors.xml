@@ -2,8 +2,19 @@
 <resources>
     <color name="purple_ttd">#501D5D</color>
     <color name="purple_dark">#3C1247</color>
+    <color name="purple_light">#6D2B7E</color>
     <color name="gold">#FFD700</color>
+    <color name="gold_dark">#D4AF37</color>
     <color name="background_light">#FAF4F5</color>
+    <color name="card_bg">#FFFFFFFF</color>
+    <color name="card_border">#E2D5E5</color>
+    <color name="input_bg">#F8FAFC</color>
+    <color name="input_border">#CBD5E1</color>
+    <color name="text_primary">#0F172A</color>
+    <color name="text_secondary">#475569</color>
+    <color name="green_travel">#16A34A</color>
+    <color name="green_bg">#DCFCE7</color>
+    <color name="red_danger">#DC2626</color>
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
 </resources>

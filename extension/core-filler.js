@@ -363,7 +363,11 @@
       const idNumInput = rowContainer.querySelector('input[name="idProofNumber"]') ||
                          this.findInputByHeuristic(rowContainer, ['idproofnumber', 'idnum', 'aadhaar']);
       if (idNumInput && pilgrim.idNumber) {
-        this.setInputValue(idNumInput, String(pilgrim.idNumber).trim());
+        let cleanId = String(pilgrim.idNumber).trim();
+        if ((pilgrim.idType || '').toLowerCase().includes('aadhaar')) {
+          cleanId = cleanId.replace(/\D/g, '').slice(0, 12);
+        }
+        this.setInputValue(idNumInput, cleanId);
       }
 
       return true;

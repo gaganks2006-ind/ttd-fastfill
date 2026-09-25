@@ -196,11 +196,39 @@ document.addEventListener('DOMContentLoaded', async () => {
           </div>
           <div class="form-group">
             <label>Photo ID Number *</label>
-            <input type="text" class="ttd-input d-idnum" data-idx="${idx}" value="${d.idNumber || ''}" placeholder="12-digit Aadhaar Number">
+            <input type="${d.idType === 'Aadhaar Card' ? 'number' : 'text'}" class="ttd-input d-idnum" data-idx="${idx}" value="${d.idNumber || ''}" maxlength="${d.idType === 'Aadhaar Card' ? '12' : '20'}" placeholder="${d.idType === 'Aadhaar Card' ? '12-digit Aadhaar Number' : 'Enter ID Number'}">
           </div>
         </div>
       `;
       devoteeContainer.appendChild(card);
+    });
+
+    // Wire ID Type Change for dynamic 12-digit Aadhaar enforcement
+    document.querySelectorAll('.d-idtype').forEach(sel => {
+      sel.addEventListener('change', (e) => {
+        const idx = parseInt(e.target.dataset.idx, 10);
+        const card = e.target.closest('.devotee-card');
+        const numInput = card.querySelector('.d-idnum');
+        const isAadhaar = e.target.value === 'Aadhaar Card';
+
+        numInput.type = isAadhaar ? 'number' : 'text';
+        numInput.maxLength = isAadhaar ? 12 : 20;
+        numInput.placeholder = isAadhaar ? '12-digit Aadhaar Number' : 'Enter ID Number';
+        if (isAadhaar && numInput.value.length > 12) {
+          numInput.value = numInput.value.replace(/\D/g, '').slice(0, 12);
+        }
+      });
+    });
+
+    // Restrict Aadhaar input to 12 digits on typing
+    document.querySelectorAll('.d-idnum').forEach(input => {
+      input.addEventListener('input', (e) => {
+        const card = e.target.closest('.devotee-card');
+        const idType = card.querySelector('.d-idtype').value;
+        if (idType === 'Aadhaar Card') {
+          e.target.value = e.target.value.replace(/\D/g, '').slice(0, 12);
+        }
+      });
     });
 
     // Wire Per-Devotee Toggles
@@ -248,7 +276,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         currentList[idx].age = card.querySelector('.d-age').value.trim();
         currentList[idx].gender = card.querySelector('.d-gender').value;
         currentList[idx].idType = card.querySelector('.d-idtype').value;
-        currentList[idx].idNumber = card.querySelector('.d-idnum').value.trim();
+        let idVal = card.querySelector('.d-idnum').value.trim();
+        if (currentList[idx].idType === 'Aadhaar Card') {
+          idVal = idVal.replace(/\D/g, '').slice(0, 12);
+        }
+        currentList[idx].idNumber = idVal;
       }
     });
 
