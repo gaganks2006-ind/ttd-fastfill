@@ -227,13 +227,20 @@ public class MainActivity extends AppCompatActivity {
 
             String jsToRun = "(function() {\n" +
                     "  try {\n" +
-                    "    if (typeof window.TTDFastFiller === 'undefined') {\n" +
+                    "    var filler = window.TTDFastFiller || (window.TTDFastFillCore ? {\n" +
+                    "      fillAll: function(c) {\n" +
+                    "        return window.TTDFastFillCore.executeAutonomousRun(c.devotees, c.address, { autoCheckAgreements: c.agreeTerms !== false, autoClickContinue: c.autoAdvance !== false });\n" +
+                    "      }\n" +
+                    "    } : null);\n" +
+                    "    if (!filler) {\n" +
                     "      window.AndroidBridge.onFillResult(false, 'Engine not ready or not on TTD page.', 0, 0);\n" +
                     "      return;\n" +
                     "    }\n" +
                     "    var payload = " + config.toString() + ";\n" +
-                    "    window.TTDFastFiller.fillAll(payload).then(function(res) {\n" +
-                    "      window.AndroidBridge.onFillResult(res.success, res.message || '', res.devoteesFilled || 0, res.duration || 0);\n" +
+                    "    filler.fillAll(payload).then(function(res) {\n" +
+                    "      var count = res.devoteesFilled !== undefined ? res.devoteesFilled : (res.pilgrimsFilled || 0);\n" +
+                    "      var dur = res.duration !== undefined ? res.duration : (res.timeTakenMs || 0);\n" +
+                    "      window.AndroidBridge.onFillResult(res.success, res.message || '', count, dur);\n" +
                     "    }).catch(function(err) {\n" +
                     "      window.AndroidBridge.onFillResult(false, err.message, 0, 0);\n" +
                     "    });\n" +

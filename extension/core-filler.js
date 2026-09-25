@@ -513,11 +513,33 @@
     }
   }
 
-  // Export Singleton instance
+  // Export Singleton instance & Legacy Bridge
   const instance = new TTDFastFillCoreEngine();
+  const legacyBridge = {
+    fillAll: function (config) {
+      const pilgrims = (config && config.devotees) || [];
+      const general = (config && config.address) || {};
+      const opts = {
+        autoCheckAgreements: config ? config.agreeTerms !== false : true,
+        autoClickContinue: config ? config.autoAdvance !== false : true,
+        extraLaddus: config ? config.extraLaddus : 0,
+        hundiAmount: config ? config.hundiAmount : 0
+      };
+      return instance.executeAutonomousRun(pilgrims, general, opts).then(function (res) {
+        return {
+          success: res.success,
+          message: res.errors && res.errors.length ? res.errors.join('; ') : 'Filled ' + res.pilgrimsFilled + ' devotee(s)',
+          devoteesFilled: res.pilgrimsFilled,
+          duration: res.timeTakenMs
+        };
+      });
+    }
+  };
+
   if (typeof module !== 'undefined' && module.exports) {
     module.exports = instance;
   } else {
     global.TTDFastFillCore = instance;
+    global.TTDFastFiller = legacyBridge;
   }
 })(typeof window !== 'undefined' ? window : this);
