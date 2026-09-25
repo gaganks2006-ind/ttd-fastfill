@@ -7,6 +7,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,10 +34,35 @@ jobs:
       run: |
         cd android
         gradle assembleDebug --stacktrace
+        cp app/build/outputs/apk/debug/app-debug.apk ../TTD-FastFill.apk
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
         name: TTD-FastFill-APK
-        path: android/app/build/outputs/apk/debug/*.apk
+        path: TTD-FastFill.apk
         retention-days: 14
+
+    - name: Publish GitHub Release
+      uses: softprops/action-gh-release@v2
+      if: github.ref == 'refs/heads/main'
+      with:
+        tag_name: v1.1.0
+        name: "TTD FastFill v1.1.0 (Refined UI & 12-Digit Aadhaar Enforcement)"
+        body: |
+          ### 🚀 TTD FastFill v1.1.0
+
+          #### ✨ What's New:
+          - **Strict 12-Digit Aadhaar Limit**: Aadhaar field is strictly locked to 12 digits with real-time numeric constraints and input validation.
+          - **Devotee Pool UI Overhaul**:
+            - Clean high-contrast cards (no dark-on-dark theme collisions).
+            - Un-cramped fields: dedicated row for ID Proof Type (full "Aadhaar Card" label displayed).
+            - Separate Age & Gender columns.
+            - Distinct badge `#1`, `#2` with clear "Going" / "Not Going" status indicators.
+            - "⚡ Select First 6" quick toggle button.
+          - **Loopholes Resolved**:
+            - Form validation for blank names, ages (1-120), 12-digit Aadhaar length, and 6-digit postal code.
+            - Strict 6-devotee selection cap enforced.
+        files: TTD-FastFill.apk
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
